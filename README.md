@@ -144,6 +144,7 @@ GET /api/task/query?requestToken={requestToken}
 
 - **GitHub Issues**: [https://github.com/luckyshine2026/acscloud/issues](https://github.com/luckyshine2026/acscloud/issues)
 - **Business Inquiries**: Contact via GitHub
+- **Emal Contact**: yanhongmei197710@gmail.com, shengchuan1@gmail.com
 
 ---
 
