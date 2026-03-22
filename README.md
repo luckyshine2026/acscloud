@@ -18,6 +18,8 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 
 ![Device View](./docs/screenshots/device_view.png)
 
+![System Info](./docs/screenshots/systeminfo.png)
+
 ### Parameter Configuration
 - **Visual Templates** - Configure WAN, LAN, WLAN, SIP, VoIP parameters via templates
 - **Batch Deployment** - Configure multiple devices simultaneously with async execution
@@ -45,7 +47,6 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 - **Multi-tenant** - Independent tokens with permission isolation
 - **Task Query** - Real-time task execution status tracking
 
-![System Info](./docs/screenshots/systeminfo.png)
 
 ---
 
@@ -56,9 +57,8 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 | Backend | Spring Boot + MyBatis |
 | Database | MySQL 5.7 |
 | Cache | Redis |
-| Frontend | Vue.js |
 | Web Server | Nginx |
-| Protocol | TR-069 (CWMP), STUN |
+| Protocol | TR-069 (CWMP)|
 | Security | HTTPS, Token Auth |
 
 ---
@@ -71,38 +71,6 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 - **Redis**: 3.0+
 - **Memory**: 4GB+ recommended
 - **Disk**: 100GB+ based on device scale
-
----
-
-## Quick Start
-
-### 1. Clone the Project
-```bash
-git clone https://github.com/luckyshine2026/acscloud.git
-```
-
-### 2. Initialize Database
-```bash
-mysql -u root -p
-CREATE DATABASE IF NOT EXISTS ACS DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
-use ACS;
-source init.sql;
-```
-
-### 3. Configure Database
-Update database connection in `application.yml` or startup parameters.
-
-### 4. Start Services
-```bash
-./start.sh
-```
-
-### 5. Access System
-- Admin Console: `http://your-domain:9090/acscloud`
-- Device Endpoint: `http://your-domain:9090/ACS-server/ACS`
-- API Base: `http://your-domain:8888/api/`
-
----
 
 ## API Examples
 
@@ -194,6 +162,5 @@ acscloud/
 ├── docs/                 # Documentation
 │   ├── screenshots/      # Screenshots
 │   ├── api.md            # API documentation
-│   ├── deploy.md         # Deployment guide
 │   └── troubleshooting.md # FAQ
 ```
