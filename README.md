@@ -335,60 +335,440 @@ docker run -d --name acscloud \
 
 ---
 
-## API Examples
+## API Documentation
 
-### Configure Device Parameters
-```bash
-POST /api/task/setParameterValues
-Content-Type: application/json
-X-Token: {your-api-token}
+### Base URLs
 
-[
-  {
-    "serialNumber": "DEVICE_SN_001",
-    "params": [
-      {
-        "name": "InternetGatewayDevice.ManagementServer.PeriodicInformInterval",
-        "type": "string",
-        "value": "60"
-      }
-    ]
-  }
-]
-```
+| Environment | Domain |
+|-------------|--------|
+| Default | http://39.106.195.193:8888/ |
+| Development | http://123.57.88.230:8888/ |
 
-### Reboot Device
-```bash
-POST /api/task/reboot
-Content-Type: application/json
+### Authentication
 
-[
-  {
-    "serialNumber": "DEVICE_SN_001"
-  }
-]
-```
+After successful login, `itms_authorization` and `itms_uid` are returned. Include these in subsequent request headers:
+- `itms_authorization`: JWT Token
+- `itms_lang`: Language code (zh_CN / en_US)
 
-### Firmware Upgrade
-```bash
-POST /api/task/firmwareUpgrade
-Content-Type: application/json
+### Common Response Format
 
+```json
 {
-  "name": "firmware_upgrade_v1",
-  "scheduleTime": "",
-  "firmware": {
-    "downloadUrl": "http://your-server/firmware/v2.0.0.bin",
-    "downloadFileName": "v2.0.0.bin",
-    "downloadFileSize": "5242880"
-  },
-  "serialNumbers": ["DEVICE_SN_001", "DEVICE_SN_002"]
+    "resCode": "8200",
+    "data": {},
+    "resMessage": "Success"
 }
 ```
 
-### Query Task Status
+### Error Codes
+
+| Code | Message | Description |
+|------|---------|-------------|
+| 8200 | Success | Success |
+| 5015 | Username already exists | Username already exists |
+| 5017 | Wrong password | Wrong password |
+| 5018 | Token expired | Token expired |
+| 5027 | File size must be less than 600M | File too large |
+| 5028 | Invalid file | Invalid file format |
+| 5029 | Empty file | Empty file |
+
+---
+
+### 1. Authentication APIs
+
+#### Login
+```
+POST /api/user/login_acs
+```
+
+**Request:**
+```json
+{
+    "loginName": "super",
+    "password": "111111",
+    "acsHost": "http://123.57.88.230:8888",
+    "isRememberMe": true
+}
+```
+
+**Response:**
+```json
+{
+    "resCode": "8200",
+    "data": {
+        "success": true,
+        "itms_authorization": "itms eyJhbGci...",
+        "itms_uid": 580
+    },
+    "resMessage": "Success"
+}
+```
+
+#### Register User
+```
+POST /api/user/signup_acs
+```
+
+**Request:**
+```json
+{
+    "password": "password123",
+    "loginName": "13818569506",
+    "mobile": "13818569506",
+    "email": "user@example.com",
+    "lang": "zh_CN"
+}
+```
+
+**Note:** Password must be a combination of numbers and letters.
+
+#### Forgot Password
+```
+GET /api/user/forget_password
+```
+
+---
+
+### 2. Template APIs
+
+#### Get All Template Categories
+```
+GET /api/template/get_all_category
+```
+
+**Response:**
+```json
+{
+    "resCode": "8200",
+    "data": [
+        {"categoryName": "PPPOE-Routed", "categoryCode": "5019"},
+        {"categoryName": "PPPOE-Bridged", "categoryCode": "5020"},
+        {"categoryName": "IPOE-Bridged", "categoryCode": "5021"},
+        {"categoryName": "IPOE-Static IP", "categoryCode": "5022"},
+        {"categoryName": "IPOE-DHCP", "categoryCode": "5023"},
+        {"categoryName": "WLAN", "categoryCode": "5024"},
+        {"categoryName": "SIP Voice", "categoryCode": "5025"}
+    ]
+}
+```
+
+#### Get Template List (Paginated)
+```
+GET /api/template/list?pageNo=1&pageSize=10
+```
+
+#### Get Template Parameters
+```
+GET /api/template/get_param_list?category=5019
+```
+
+#### Add Template
+```
+POST /api/template/add_template
+```
+```json
+{
+    "templateName": "MyTemplate",
+    "category": "5019",
+    "isGroupType": 0,
+    "paramList": [
+        {"uiKeyCode": "VlanId", "value": "100"},
+        {"uiKeyCode": "NATEnabled", "value": "1"}
+    ]
+}
+```
+
+#### Update Template
+```
+POST /api/template/update_template
+```
+
+#### Delete Template
+```
+POST /api/template/delete_template?id={templateId}
+```
+
+#### Add Template Group
+```
+POST /api/template/add_group_template
+```
+```json
+{
+    "groupTemplateName": "GroupName",
+    "description": "Description",
+    "childTemplates": [
+        {"templateId": "100"},
+        {"templateId": "200"}
+    ]
+}
+```
+
+#### Get Template Group Detail
+```
+GET /api/template/get_group_template_detail?templateId={id}
+```
+
+---
+
+### 3. Device APIs
+
+#### Get CPE Query Conditions
+```
+GET /api/device/get_cpes_query_condition
+```
+
+Returns: software/hardware versions, auth types, ISPs, device types, online status.
+
+#### Get CPE List (Paginated)
+```
+GET /api/device/list_cpes?pageNo=1&pageSize=10
+```
+
+#### Get CPE Detail
+```
+GET /api/device/get_cpe_detail?cpeId={id}
+```
+
+#### Get CPE Basic Info
+```
+GET /api/device/get_cpe_basic_info?serialNumber={sn}
+```
+
+#### Get All CPE Serial Numbers
+```
+GET /api/device/get_all_cpes
+```
+
+#### Get CPE Snapshot
+```
+GET /api/device/get_cpe_snapshot?serialNumber={sn}&param_name={optional}
+```
+
+#### Update Device
+```
+POST /api/device/update_device
+```
+```json
+{
+    "serialNumber": "48575443394DEA86",
+    "room": "Room101",
+    "cpeName": "DeviceName",
+    "orgId": 100
+}
+```
+
+#### Delete CPE
+```
+POST /api/device/deleteCpe?id={cpeId}
+```
+
+---
+
+### 4. Task APIs
+
+#### Reboot Devices
+```
+POST /api/reboot
+```
+```json
+[100, 200]
+```
+
+#### Ping Test
+```
+POST /api/ping
+```
+```json
+[
+    {
+        "cpeId": 1,
+        "numberOfRepetitions": 100,
+        "host": "www.baidu.com"
+    }
+]
+```
+
+#### Get Ping Results
+```
+GET /api/ping/get_ping_detail?cpeId={optional}
+```
+
+#### Factory Reset
+```
+POST /api/task/factoryReset
+```
+```json
+[100, 200]
+```
+
+#### Firmware Upgrade
+```
+POST /api/task/firmwareUpgrade
+```
+```json
+{
+    "name": "upgrade_task",
+    "scheduleTime": "",
+    "firmware": {
+        "downloadFileName": "firmware.img",
+        "downloadFileSize": "28460544",
+        "downloadPassword": "",
+        "downloadUrl": "http://192.168.1.7/firmware.img",
+        "downloadUserName": ""
+    },
+    "cpeIds": [100, 102]
+}
+```
+
+#### RPC Diagnosis
+```
+POST /api/task/save_rpctask
+```
+
+**rpcMethod values:** SetParameterValues, GetParameterValues, GetParameterNames, AddObject, DeleteObject, GetParameterAttributes, GetRPCMethods, SetParameterAttributes
+
+```json
+{
+    "rpcMethod": "SetParameterValues",
+    "paramDtos": [{
+        "params": [{
+            "name": "InternetGatewayDevice.ManagementServer.PeriodicInformInterval",
+            "type": "string",
+            "value": "40"
+        }],
+        "cpeId": 100
+    }]
+}
+```
+
+#### Query Task Status
+```
+GET /api/task/query?requestToken={token}
+```
+
+#### Task List
+```
+GET /api/task/list?taskType={type}
+```
+
+| taskType | Description |
+|----------|-------------|
+| 1 | Template Deployment |
+| 2 | RPC Diagnosis |
+| 3 | Firmware Upgrade |
+| 4 | Config File Deployment |
+
+#### Delete Task
+```
+DELETE /api/task/delete_task?taskType={type}&id={taskId}
+```
+
+---
+
+### 5. Firmware APIs
+
+#### Upload Firmware
+```
+POST /api/firmware/upload
+Content-Type: multipart/form-data
+
+file: {firmware_file}
+version: {version_string}
+```
+
+#### Firmware List
+```
+GET /api/firmware/list
+```
+
+#### Delete Firmware
+```
+POST /api/firmware/deleteFirmware
+```
+
+---
+
+### 6. System APIs
+
+#### Get User Setting
+```
+GET /api/system/get_user_setting
+```
+
+#### Save System Setting
+```
+POST /api/system/save_setting
+```
+```json
+{
+    "advertisement": "Ad content",
+    "periodTime": 120,
+    "periodTimeRange": "120-180",
+    "acsAuthModel": 0
+}
+```
+
+**acsAuthModel values:**
+- 0: No Authentication
+- 1: Basic Authentication
+- 2: Digest Authentication (MD5)
+
+#### Save Custom Field
+```
+POST /api/system/save_customize_filed
+```
+```json
+{
+    "pageCode": "cpelist",
+    "fields": [
+        {"fieldCode": "room", "status": 1},
+        {"fieldCode": "webpassword", "status": 1}
+    ]
+}
+```
+
+#### Get Custom Field Info
+```
+GET /api/system/get_customize_field_info?page_code=cpelist
+```
+
+#### Get Query Field
+```
+GET /api/system/get_query_field?page_code=template
+```
+
+---
+
+### API Usage Examples
+
+#### Login and Get Device List
+
 ```bash
-GET /api/task/query?requestToken={requestToken}
+# 1. Login
+curl -X POST http://123.57.88.230:8888/api/user/login_acs \
+  -H "Content-Type: application/json" \
+  -d '{"loginName":"admin","password":"123456","isRememberMe":false}'
+
+# 2. Use token to get device list
+curl -X GET "http://123.57.88.230:8888/api/device/list_cpes?pageNo=1&pageSize=10" \
+  -H "itms_authorization: {token}" \
+  -H "itms_lang: zh_CN"
+```
+
+#### Reboot Multiple Devices
+
+```bash
+curl -X POST http://123.57.88.230:8888/api/reboot \
+  -H "Content-Type: application/json" \
+  -H "itms_authorization: {token}" \
+  -d '[100, 200, 300]'
+```
+
+#### Query CPE by Serial Number
+
+```bash
+curl -X GET "http://123.57.88.230:8888/api/device/get_cpe_basic_info?serialNumber=ABC123" \
+  -H "itms_authorization: {token}"
 ```
 
 ---
