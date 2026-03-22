@@ -184,22 +184,20 @@ No need for expensive infrastructure upgrades. ACSCloud runs efficiently on stan
 - **Batch Operations** - Configure multiple devices at once
 - **Visual Template Editor** - Easy configuration management
 - **RPC Path Comparison** - Diff view for parameter changes
-- **Built-in STUN Support** - NAT traversal support
 - **Comprehensive Parameter Support** - WAN, LAN, WLAN, VoIP, SIP
 
 ---
 
 ## Tech Stack
 
-| Component | Technology |
-|-----------|------------|
-| Backend | Spring Boot + MyBatis |
-| Database | MySQL 5.7 |
-| Cache | Redis |
-| Task Queue | Built-in Async Queue |
-| Frontend | Vue.js |
-| Web Server | Nginx |
-| Protocol | TR-069 (CWMP), STUN |
+| Component | Technology                 |
+|-----------|----------------------------|
+| Backend | Spring Boot + MyBatis      |
+| Database | MySQL 5.7                  |
+| Cache | Redis                      |
+| Task Queue | Built-in Async Queue       |
+| Web Server | Nginx                      |
+| Protocol | TR-069 (CWMP),SNMP         |
 | Security | HTTPS, Token Auth, License |
 
 ---
