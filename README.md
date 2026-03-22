@@ -6,13 +6,42 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 
 ---
 
+## What is TR-069 (CWMP)?
+
+**TR-069 (CPE WAN Management Protocol, CWMP)** is a technical specification developed by the Broadband Forum for managing CPE (Customer Premises Equipment) devices over IP networks.
+
+### TR-069 Benefits
+
+| Feature | Description |
+|---------|-------------|
+| **Zero-Touch Provisioning** | Devices auto-configure on first boot without manual intervention |
+| **Remote Management** | Manage devices from anywhere without on-site visits |
+| **Batch Operations** | Configure thousands of devices simultaneously |
+| **Firmware Management** | Remote firmware updates and version control |
+| **Diagnostics** | Built-in diagnostic tools for troubleshooting |
+| **Standards-Based** | Interoperable across vendors and device types |
+
+### Supported Device Types
+
+- Optical Network Terminals (ONT/GPON)
+- Cable Modems
+- DSL Routers
+- WiFi Access Points
+- IP Cameras
+- VoIP Gateways
+- Industrial IoT Devices
+- Smart Home Gateways
+
+---
+
 ## Key Features
 
 ### Device Management
 - **Auto Registration** - Zero-config device onboarding with automatic authentication
 - **Real-time Monitoring** - Monitor device online status, uptime, and last inform time
-- **Batch Operations** - Bulk reboot, factory reset, and configuration deployment
+- **Batch Operations** - Bulk reboot, factory reset, configuration deployment
 - **Organization Management** - Multi-level organization structure for regional/carrier-based grouping
+- **Device Classification** - Automatic device type detection and model identification
 
 ![Device List](./docs/screenshots/cpelist.png)
 
@@ -25,6 +54,7 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 - **Batch Deployment** - Configure multiple devices simultaneously with async execution
 - **Configuration Snapshots** - Historical version tracking with rollback support
 - **Custom RPC Paths** - Flexible parameter path configuration
+- **Template Import/Export** - Excel-based template management
 
 ![WAN Template](./docs/screenshots/wan_template.png)
 
@@ -34,11 +64,13 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 - **Firmware Upgrade** - Batch firmware updates with scheduled execution
 - **Config File Distribution** - Vendor Configuration File batch deployment
 - **Version Management** - Firmware version control and compatibility matching
+- **Upgrade Rollback** - Safe rollback mechanism
 
 ### Diagnostics
 - **Ping Test** - Remote device ping diagnostics
 - **Connection Diagnostics** - Device connection status and credentials retrieval
 - **Async Notifications** - Real-time notification support
+- **CPE Snapshots** - Parameter value snapshots for troubleshooting
 
 ![CPE Snapshot](./docs/screenshots/cpesnapshot.png)
 
@@ -46,7 +78,46 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 - **RESTful API** - Complete HTTP API for third-party system integration
 - **Multi-tenant** - Independent tokens with permission isolation
 - **Task Query** - Real-time task execution status tracking
+- **Webhooks** - Event-driven notifications
 
+---
+
+## Product Advantages
+
+### 1. Enterprise-Grade Reliability
+- Asynchronous task processing ensures system stability
+- Failed tasks don't affect other operations
+- Comprehensive logging and audit trails
+- Database-level transaction support
+
+### 2. Scalability
+- Supports from 1 to 1,000,000+ devices
+- Horizontal scaling architecture
+- Load balancing support via Nginx
+
+### 3. Multi-Tenant Support
+- Complete tenant isolation
+- Custom branding support
+- Role-based access control
+
+### 4. Easy Integration
+- RESTful API with comprehensive documentation
+- Webhook support for real-time events
+- Standard TR-069 protocol compliance
+
+### 5. Cost Efficiency
+- Reduce on-site maintenance costs by 80%+
+- Automated provisioning saves deployment time
+- Centralized management reduces operational overhead
+
+### 6. Technical Advantages
+- **HTTPS Support** - Secure communication
+- **Per-User Task Tracking** - View operation history
+- **Batch Operations** - Configure multiple devices at once
+- **Visual Template Editor** - Easy configuration management
+- **RPC Path Comparison** - Diff view for parameter changes
+- **Built-in STUN Support** - NAT traversal support
+- **Comprehensive Parameter Support** - WAN, LAN, WLAN, VoIP, SIP
 
 ---
 
@@ -57,20 +128,113 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 | Backend | Spring Boot + MyBatis |
 | Database | MySQL 5.7 |
 | Cache | Redis |
+| Task Queue | Built-in Async Queue |
+| Frontend | Vue.js |
 | Web Server | Nginx |
-| Protocol | TR-069 (CWMP)|
-| Security | HTTPS, Token Auth |
+| Protocol | TR-069 (CWMP), STUN |
+| Security | HTTPS, Token Auth, License |
+
+---
+
+## System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Web Console                          │
+│                   (Admin + User Portal)                    │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                         REST API                            │
+│                (Device Management + Tasks)                 │
+└─────────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+│   MySQL DB    │    │     Redis     │    │   File Store  │
+│  (Metadata)   │    │   (Cache)     │    │ (Firmware)    │
+└───────────────┘    └───────────────┘    └───────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    ACS Core Engine                          │
+│           (TR-069 CWMP Protocol Processor)                  │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      CPE Devices                            │
+│      (ONT, Router, Gateway, IoT Devices, etc.)              │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## Requirements
 
-- **OS**: CentOS 7+ / Linux
-- **JDK**: 1.8+
-- **MySQL**: 5.7+ (set `lower_case_table_names=1`)
-- **Redis**: 3.0+
-- **Memory**: 4GB+ recommended
-- **Disk**: 100GB+ based on device scale
+### Hardware Requirements
+
+| Scale | CPU | RAM | Disk |
+|-------|-----|-----|------|
+| < 1,000 devices | 2 cores | 4 GB | 50 GB |
+| 1,000 - 10,000 devices | 4 cores | 8 GB | 100 GB |
+| 10,000 - 100,000 devices | 8 cores | 16 GB | 200 GB |
+| > 100,000 devices | 16 cores+ | 32 GB+ | 500 GB+ |
+
+### Software Requirements
+
+| Component | Version | Notes |
+|-----------|---------|-------|
+| OS | CentOS 7+ / Ubuntu 18+ / Debian 10+ | Linux |
+| JDK | 1.8 (JDK 8u231+) | Required |
+| MySQL | 5.7+ | Required, case-insensitive |
+| Redis | 3.0+ | Required |
+| Nginx | 1.12+ | Optional, for reverse proxy |
+
+---
+
+## Quick Start
+
+### 1. Clone the Project
+```bash
+git clone https://github.com/luckyshine2026/acscloud.git
+cd acscloud
+```
+
+### 2. Initialize Database
+```bash
+mysql -u root -p
+CREATE DATABASE IF NOT EXISTS ACS DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+USE ACS;
+SOURCE init.sql;
+```
+
+### 3. Configure Database
+Edit `application.yml` or create `api.properties`:
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/ACS
+spring.datasource.username=root
+spring.datasource.password=your_password
+```
+
+### 4. Start Services
+```bash
+./start.sh          # Start ACS service
+./api/startApi.sh   # Start API service
+```
+
+### 5. Access System
+| Service | URL |
+|---------|-----|
+| Admin Console | http://your-domain:9090/acscloud |
+| Device Endpoint | http://your-domain:9090/ACS-server/ACS |
+| API Base | http://your-domain:8888/api/ |
+
+**Default Login**: admin / 123456
+
+---
 
 ## API Examples
 
@@ -132,25 +296,38 @@ GET /api/task/query?requestToken={requestToken}
 
 ## Use Cases
 
-- **ISP Home Gateway Management** - ONT, router batch configuration and O&M
-- **Enterprise Network Management** - Unified management of APs, switches, gateways
-- **Smart Community/Parks** - Large-scale IoT device orchestration
-- **Industrial IoT (IIoT)** - Remote device monitoring and configuration
-- **OSS/BSS Integration** - API integration with existing management systems
+| Industry | Use Case |
+|----------|----------|
+| **Telecom** | ISP home gateway management, FTTH provisioning |
+| **ISP** | Mass router configuration, WiFi optimization |
+| **Smart City** | Street lamp controllers, surveillance cameras |
+| **Campus** | School network devices, lab equipment |
+| **Industrial** | Factory automation, IIoT gateways |
+| **Enterprise** | Branch office networking, SD-WAN CPE |
 
 ---
 
-## Contact
+## Security
+
+- **HTTPS Only** - All communications encrypted
+- **Token Authentication** - Secure API access
+- **License Protection** - Hardware-based licensing
+- **Audit Logging** - Complete operation trails
+- **Tenant Isolation** - Complete data separation
+
+---
+
+## Support & Contact
 
 - **GitHub Issues**: [https://github.com/luckyshine2026/acscloud/issues](https://github.com/luckyshine2026/acscloud/issues)
-- **Business Inquiries**: Contact via GitHub
-- **Emal Contact**: yanhongmei197710@gmail.com, shengchuan1@gmail.com
+- **Documentation**: See `/docs` directory
+- **Email**: yanhongmei197710@gmail.com, shengchuan1@gmail.com
 
 ---
 
 ## License
 
-This project is for authorized users only. For commercial licensing, please contact the author.
+This project requires a valid license for production use. Contact the author for commercial licensing.
 
 ---
 
@@ -160,8 +337,10 @@ This project is for authorized users only. For commercial licensing, please cont
 acscloud/
 ├── README.md              # This file
 ├── init.sql              # Database initialization
-├── docs/                 # Documentation
-│   ├── screenshots/      # Screenshots
+├── docs/
+│   ├── screenshots/      # Product screenshots
 │   ├── api.md            # API documentation
+│   ├── deploy.md         # Deployment guide
 │   └── troubleshooting.md # FAQ
+└── installation/         # Installation packages (separate)
 ```
