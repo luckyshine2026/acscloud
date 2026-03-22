@@ -60,6 +60,8 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 
 ![RPC Tree](./docs/screenshots/rpctree.png)
 
+![Task Management](./docs/screenshots/task.png)
+
 ### Firmware & Updates
 - **Firmware Upgrade** - Batch firmware updates with scheduled execution
 - **Config File Distribution** - Vendor Configuration File batch deployment
@@ -79,6 +81,21 @@ Ideal for telecom operators, ISPs, smart communities, and industrial IoT deploym
 - **Multi-tenant** - Independent tokens with permission isolation
 - **Task Query** - Real-time task execution status tracking
 - **Webhooks** - Event-driven notifications
+
+### User Management & Administration
+- **Multi-user System** - Complete user management with role-based access control
+- **Internationalization (i18n)** - Support for multiple languages (Chinese, English, etc.)
+- **User Expiration** - Configurable account expiration time for temporary access
+- **Agent Management** - Agent list with last login time and IP display
+- **Admin Impersonation** - Admin can login as any user to assist with configuration
+- **Password Policy** - Auto-deploy web password policy to devices
+- **Scheduled Restart** - Auto-restart devices based on uptime or scheduled time
+- **Group-based Operations** - Restart, configure devices by group
+
+### Deployment Flexibility
+- **Cross-Platform** - Supports Linux, Windows, and macOS
+- **Docker Support** - Official Docker images for easy deployment
+- **Docker Compose** - One-command setup with all dependencies
 
 ---
 
@@ -197,7 +214,7 @@ No need for expensive infrastructure upgrades. ACSCloud runs efficiently on stan
 | Cache | Redis                      |
 | Task Queue | Built-in Async Queue       |
 | Web Server | Nginx                      |
-| Protocol | TR-069 (CWMP),SNMP         |
+| Protocol | TR-069 (CWMP)               |
 | Security | HTTPS, Token Auth, License |
 
 ---
@@ -253,10 +270,11 @@ No need for expensive infrastructure upgrades. ACSCloud runs efficiently on stan
 
 | Component | Version | Notes |
 |-----------|---------|-------|
-| OS | CentOS 7+ / Ubuntu 18+ / Debian 10+ | Linux |
+| OS | CentOS 7+ / Ubuntu 18+ / Debian 10+ / Windows / macOS | Cross-platform |
 | JDK | 1.8 (JDK 8u231+) | Required |
 | MySQL | 5.7+ | Required, case-insensitive |
 | Redis | 3.0+ | Required |
+| Docker | 20.10+ | Optional, for containerized deployment |
 | Nginx | 1.12+ | Optional, for reverse proxy |
 
 ---
@@ -299,6 +317,21 @@ spring.datasource.password=your_password
 | API Base | http://your-domain:8888/api/ |
 
 **Default Login**: admin / 123456
+
+### Quick Start with Docker (Recommended)
+
+```bash
+# Pull and run with Docker Compose
+docker-compose up -d
+
+# Or run manually
+docker run -d --name acscloud \
+  -p 9090:9090 \
+  -p 8888:8888 \
+  -e MYSQL_HOST=mysql-server \
+  -e REDIS_HOST=redis-server \
+  acscloud:latest
+```
 
 ---
 
@@ -403,6 +436,8 @@ This project requires a valid license for production use. Contact the author for
 acscloud/
 ├── README.md              # This file
 ├── init.sql              # Database initialization
+├── Dockerfile            # Docker image definition
+├── docker-compose.yml    # Docker Compose configuration
 ├── docs/
 │   ├── screenshots/      # Product screenshots
 │   ├── api.md            # API documentation
