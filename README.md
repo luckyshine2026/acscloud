@@ -316,8 +316,6 @@ spring.datasource.password=your_password
 | Device Endpoint | http://your-domain:9090/ACS-server/ACS |
 | API Base | http://your-domain:8888/api/ |
 
-**Default Login**: admin / 123456
-
 ### Quick Start with Docker (Recommended)
 
 ```bash
